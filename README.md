@@ -1,9 +1,10 @@
 # Screenux - GNU Screen for humans
 
-Run commands or scripts in screen with logging to file
+Run commands or scripts in GNU screen with logging to file
 
 ## Features
 
+- single bash file
 - run in background
 - custom log file name
     - unique timestamp suffix to logfile (default)
@@ -11,7 +12,10 @@ Run commands or scripts in screen with logging to file
 - custom output dir (default ./)
 - realtime writing to logfile
 - print run info after run
-- standalone script if screen version > 4.06.02
+- auto download screen 4.9.1 if compatible version not found
+    - standalone installs
+    - no interference with system screen
+    - install path: screenux/screen491
 
 ## Example 1 - Simple run
 `source screenux.sh`

@@ -1,5 +1,6 @@
 function screenux_run() {
     UNNAMED_SESSIONS_SCREEN_NAME="scx_run"
+    SCREEN_DOWNLOAD_DIR="screen_version_mgmt" # only used if system screen version < 4.06.02
     # Default values
     script_dir="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
     local suffix="$(date +'%Y%m%d-%H%M%S')-$(openssl rand -hex 2)"
@@ -97,25 +98,25 @@ function screenux_run() {
     local screen_version=$(screen --version | awk '{print $3}')
     local min_version="4.06.02"
     if [ "$(printf '%s\n' "$min_version" "$screen_version" | sort -V | head -n1)" != "$min_version" ]; then
-        if [ ! -d "$script_dir/screen_version_mgmt" ]; then
-            echo "screen version $min_version or higher is required."
-            return 1
-        fi
-        if [ ! -x "$script_dir/screen_version_mgmt/screen491" ]; then
+        if [ ! -x "$script_dir/screen491" ]; then
             # Download screen
             echo ""
             echo "screen version $screen_version is less than required $min_version."
             echo "Attempting to download and install screen version 4.9.1..."
-            $script_dir/screen_version_mgmt/download_gnu_screen.sh 2>&1 | tee -a $script_dir/screen_version_mgmt/download_gnu_screen.log
-            screen_version=$("$script_dir/screen_version_mgmt/screen491" --version | awk '{print $3}')
+            download_screen_491
+            screen_version=$("$script_dir/screen491" --version | awk '{print $3}')
             if [ "$(printf '%s\n' "$min_version" "$screen_version" | sort -V | head -n1)" != "$min_version" ]; then
                 echo "Failed to upgrade screen to version $min_version or higher. Please check the logs and try manually."
                 return 1
+            else
+                debug_log "Using "$script_dir/screen491""
+                screen="$script_dir/screen491"
+                screen_version=$($screen --version | awk '{print $3}')    
             fi
         else
             # Use downloaded screen
-            debug_log "Using "$script_dir/screen_version_mgmt/screen491""
-            screen="$script_dir/screen_version_mgmt/screen491"
+            debug_log "Using "$script_dir/screen491""
+            screen="$script_dir/screen491"
             screen_version=$($screen --version | awk '{print $3}')
         fi
     fi
@@ -179,4 +180,38 @@ function screenux_run() {
     # Cleanup the temporary script
     debug_log "Cleaning up temp_script"
     rm "$temp_script"
+}
+
+download_screen_491() {
+    script_dir="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+    local SCREEN_DOWNLOAD_DIR
+    SCREEN_DOWNLOAD_DIR=$(mktemp -d -t screen_download_XXXXXX)
+    local install_dir="${SCREEN_DOWNLOAD_DIR}/screen491_make"
+
+    # Change to the temporary download directory to ensure files are downloaded there
+    (
+        cd "${SCREEN_DOWNLOAD_DIR}"
+
+        # Download and extract the screen source code
+        curl -O https://ftp.gnu.org/gnu/screen/screen-4.9.1.tar.gz
+        tar -xzf screen-4.9.1.tar.gz
+
+        # Change into the extracted directory
+        cd "screen-4.9.1"
+
+        # Configure, compile, and install screen to the specified directory
+        ./configure --prefix="$install_dir"
+        make
+        make install prefix="$install_dir"
+
+        # Copy the compiled screen binary to a more convenient location
+        cp "$install_dir/bin/screen" "${script_dir}/screen491"
+
+        echo ""
+        echo "===== download screen 4.9.1 success ====="
+        echo "Download path: ${script_dir}/screen491"
+
+        # Cleanup: remove the temporary directory
+        rm -rf "${SCREEN_DOWNLOAD_DIR}"
+    )
 }
