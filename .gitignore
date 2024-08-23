@@ -1,0 +1,12 @@
+screen-4*
+screen4*
+*.tar.gz
+screenlogs
+screenlogs/*
+.vscode
+**/.log
+scx_run
+script_test.sh
+# ignore everything in screen_version_mgmt folder except this file: download_gnu_screen.sh
+screen_version_mgmt/*
+!screen_version_mgmt/download_gnu_screen.sh
