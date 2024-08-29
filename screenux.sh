@@ -1,3 +1,5 @@
+#!/usr/bin/env bash
+
 function screenux_run() {
     UNNAMED_SESSIONS_SCREEN_NAME="scx_run"
     SCREEN_DOWNLOAD_DIR="screen_version_mgmt" # only used if system screen version < 4.06.02
@@ -27,6 +29,9 @@ function screenux_run() {
         echo
         echo "Arguments:"
         echo "  command           The command to run in the screen session (should be provided after the options)."
+        echo "Examples:"
+        echo "  screenux_run \"echo test\""
+        echo "  screenux_run myscript.sh"
     }
 
     # Function to print debug messages
@@ -160,8 +165,10 @@ function screenux_run() {
 
     # Run the command in a detached screen session
     debug_log "Running command in screen session: $screenname"
+    debug_log "Temp Script: $temp_script"
     $screen -L -Logfile "$screenlog_file" -dmS "$screenname" bash "$temp_script"
-    $screen -S "$screenname" -X colon "logfile flush 0^M" # Enable real-time logging to file
+    sleep 0.2 # allow scrip to kick in
+    $screen -S "$screenname" -p0 -X logfile flush 0 # Enable real-time logging to file
 
     if $interactive; then
         $screen -r $screenname
