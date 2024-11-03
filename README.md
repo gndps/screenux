@@ -134,13 +134,6 @@ screenux run -n database_backup -o /var/log/backups "pg_dump -U postgres mydb > 
 - Interactive mode automatically attaches to the screen session
 - You can still detach and reattach later as needed
 
-# Caveats
-When running inline, it can eat 2 levels of escaped quotes
-
-To achieve `echo "\"test\""` with screenux, you need to run `screenux run -i "echo \"\\\\\\\"test\\\\\\\"\""`
-
-This limitation is not applicable when running scripts with screenux.
-
 # License
 screenux is licensed under the MIT License.
 

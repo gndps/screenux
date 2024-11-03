@@ -2,6 +2,20 @@
 
 export SCREENUX_DIR="$HOME/.local/screenux"
 
+function screenux_create_temp_file() {
+    local content="$1"
+    local temp_file=$(mktemp)
+
+    # Write the content to the temp file with escape sequences interpreted
+    echo -e "$content" > "$temp_file"
+
+    # Make the file executable
+    chmod +x "$temp_file"
+
+    # Output the path to the temporary file
+    echo "$temp_file"
+}
+
 function screenux_run() {
     UNNAMED_SESSIONS_SCREEN_NAME="scx_run"
     SCREEN_DOWNLOAD_DIR="screen_version_mgmt" # only used if system screen version < 4.06.02
@@ -127,20 +141,29 @@ function screenux_run() {
     mkdir -p "$screenlog_dir"
 
     # Create a temporary script to execute the command
-    local temp_script=$(mktemp)
-    debug_log "temp_script created at: $temp_script"
-    echo "#!/bin/bash" > "$temp_script"
-    echo "echo \"[$(date)] Running command:\"" >> "$temp_script"
-    echo "echo '$command'" >> "$temp_script"
-    echo "echo ---------" >> "$temp_script"
-    echo "eval \"$command\"" >> "$temp_script"
-    chmod +x "$temp_script"
+    # local temp_script=$(mktemp)
+    # debug_log "temp_script created at: $temp_script"
+    # echo "#!/bin/bash" > "$temp_script"
+    # echo "echo \"[$(date)] Running command:\"" >> "$temp_script"
+    # echo -e "echo -e '$command'" >> "$temp_script"
+    # echo "echo ---------" >> "$temp_script"
+    # echo "eval \"$command\"" >> "$temp_script"
+    # chmod +x "$temp_script"
 
     # Run the command in a detached screen session
     debug_log "Running command in screen session: $screenname"
-    debug_log "Temp Script: $temp_script"
-    $SCREENUX_DIR/sxreen -L -Logfile "$screenlog_file" -dmS "$screenname" bash "$temp_script"
-    sleep 0.2 # allow scrip to kick in
+    debug_log "command:"
+    debug_log -e $command
+    debug_log "pwd: $(pwd)"
+    
+    if file $command | grep -q "script"; then
+        debug_log "It's a script!"
+        $SCREENUX_DIR/sxreen -L -Logfile "$screenlog_file" -dmS "$screenname" bash "$command"
+    else
+        debug_log "Not a script."
+        $SCREENUX_DIR/sxreen -L -Logfile "$screenlog_file" -dmS "$screenname" bash -c "$command"
+    fi
+    sleep 0.2 # allow script to kick in
     $SCREENUX_DIR/sxreen -S "$screenname" -p0 -X logfile flush 0 # Enable real-time logging to file
 
     if $interactive; then
@@ -157,10 +180,6 @@ function screenux_run() {
     echo "Detach after attaching: Ctrl+A, D"
     echo "================================"
     echo ""
-
-    # Cleanup the temporary script
-    debug_log "Cleaning up temp_script"
-    rm "$temp_script"
 }
 
 # List all screen sessions with an index
@@ -223,7 +242,8 @@ function screenux() {
     case "$1" in
         run)
             shift
-            screenux_run "$@"
+            # Use printf to escape the arguments properly before passing them to screenux_run
+            screenux_run $@
             ;;
         list|l|ls)
             screenux_list
