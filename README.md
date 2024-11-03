@@ -45,6 +45,7 @@ else
         sed -i '/screenux/d' "$HOME/.bash_profile"
     fi
 fi
+unset -f screenux
 ```
 
 # Features
