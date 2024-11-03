@@ -96,14 +96,20 @@ screenux_init
 # Add the script to the bashrc
 echo "Adding screenux to your bashrc for easier use..."
 if [ ! -f "$HOME/.bashrc" ] || ! grep -q "source $INSTALL_DIR/screenux.sh" "$HOME/.bashrc"; then
+    echo "" >> "$HOME/.bashrc"
+    echo "# added by screenux" >> "$HOME/.bashrc"
     echo "source $INSTALL_DIR/screenux.sh" >> "$HOME/.bashrc"
+    echo "" >> "$HOME/.bashrc"
     echo "Screenux installation: success"
 fi
 
 echo "Adding screenux to your bashprofile for easier use..."
 if [ -f "$HOME/.bash_profile" ]; then
     if ! grep -q "source $INSTALL_DIR/screenux.sh" "$HOME/.bash_profile"; then
+        echo "" >> "$HOME/.bash_profile"
+        echo "# added by screenux" >> "$HOME/.bash_profile"
         echo "source $INSTALL_DIR/screenux.sh" >> "$HOME/.bash_profile"
+        echo "" >> "$HOME/.bash_profile"
         echo "Screenux add to bashprofile: success"
     fi
 fi
@@ -116,8 +122,9 @@ if command -v screenux &> /dev/null; then
     echo ""
     echo "Please run source ~/.bashrc to use it"
     echo ""
-    echo "Example command:"
+    echo "Example commands:"
     echo -e "screenux run 'i=0; while true; do echo \"\$i\"; ((i++)); sleep 1; done'"
+    echo -e "screenux run myscript.sh"
 else
     echo "ERROR: Some problem occurred installing screenux."
     echo "Please try reinstalling after this: rm -rf $HOME/.local/screenux"
