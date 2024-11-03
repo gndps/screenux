@@ -109,9 +109,15 @@ if [ -f "$HOME/.bash_profile" ]; then
 fi
 
 unset -f screenux_init download_screen_491
-source $HOME/.bashrc
+source $INSTALL_DIR/screenux.sh
 if command -v screenux &> /dev/null; then
+    echo ""
     echo "✨✨ Screenux installed at $INSTALL_DIR"
+    echo ""
+    echo "Please run source ~/.bashrc to use it"
+    echo ""
+    echo "Example command:"
+    echo -e "screenux run 'i=0; while true; do echo \"\$i\"; ((i++)); sleep 1; done'"
 else
     echo "ERROR: Some problem occurred installing screenux."
     echo "Please try reinstalling after this: rm -rf $HOME/.local/screenux"
