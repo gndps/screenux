@@ -72,7 +72,7 @@ function screenux_init() {
                 return 1
             else
                 echo "Downloaded screen successfully"
-                echo "Using "$INSTALL_DIR/sxreen"
+                echo "Using "$INSTALL_DIR/sxreen""
                 screen_version=$($INSTALL_DIR/sxreen --version | awk '{print $3}')
             fi
         else
