@@ -118,6 +118,9 @@ unset -f screenux_init download_screen_491
 source $INSTALL_DIR/screenux.sh
 if command -v screenux &> /dev/null; then
     echo ""
+    echo "=========================================="
+    echo "=========================================="
+    echo ""
     echo "✨✨ Screenux installed at $INSTALL_DIR"
     echo ""
     echo "Please run source ~/.bashrc to use it"
@@ -125,6 +128,10 @@ if command -v screenux &> /dev/null; then
     echo "Example commands:"
     echo -e "screenux run 'i=0; while true; do echo \"\$i\"; ((i++)); sleep 1; done'"
     echo -e "screenux run myscript.sh"
+    echo ""
+    echo "=========================================="
+    echo "=========================================="
+    echo ""
 else
     echo "ERROR: Some problem occurred installing screenux."
     echo "Please try reinstalling after this: rm -rf $HOME/.local/screenux"
