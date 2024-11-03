@@ -313,3 +313,5 @@ function screenux() {
             ;;
     esac
 }
+
+screenux_init
