@@ -69,13 +69,13 @@ function screenux_init() {
                 echo "Failed to upgrade screen to version $min_version or higher. Please check the logs and try manually."
                 return 1
             else
-                debug_log "Using "$INSTALL_DIR/sxreen""
+                echo "Using "$INSTALL_DIR/sxreen""
                 alias sxreen="$INSTALL_DIR/sxreen"
                 screen_version=$(sxreen --version | awk '{print $3}')    
             fi
         else
             # Use downloaded screen
-            debug_log "Using "$INSTALL_DIR/sxreen""
+            echo "Using "$INSTALL_DIR/sxreen""
             screen="$INSTALL_DIR/sxreen"
             alias sxreen="$INSTALL_DIR/sxreen"
             screen_version=$(sxreen --version | awk '{print $3}')
@@ -85,7 +85,7 @@ function screenux_init() {
         ln -sf "$SYSTEM_SCREEN_PATH" "$INSTALL_DIR/sxreen"
         echo "Linked system 'screen' ($SYSTEM_SCREEN_PATH) to $INSTALL_DIR/sxreen"
     fi
-    debug_log "screen version: $screen_version (sufficient)"
+    echo "screen version: $screen_version (sufficient)"
 }
 
 
