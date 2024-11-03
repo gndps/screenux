@@ -33,7 +33,12 @@ screenux -h
 ## Uninstall
 ```bash
 rm -rf $HOME/.local/screenux
-cp ~/.bashrc ~/.bashrc.backup_$(date +%Y%m%d_%H%M%S) && sed -i '/screenux/d' ~/.bashrc
+cp ~/.bashrc ~/.bashrc.backup_$(date +%Y%m%d_%H%M%S)
+if [[ "$OSTYPE" == "darwin"* ]]; then
+    sed -i '' '/screenux/d' "$HOME/.bashrc"
+else
+    sed -i '/screenux/d' "$HOME/.bashrc"
+fi
 ```
 
 # Features
