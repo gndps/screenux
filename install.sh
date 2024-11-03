@@ -1,5 +1,10 @@
 #!/usr/bin/env bash
 
+set -e
+
+# Check if any command fails
+trap 'echo "Installation failed"; exit 1' ERR
+
 INSTALL_DIR="$HOME/.local/screenux"
 SCREENUX_URL="https://raw.githubusercontent.com/gndps/screenux/refs/heads/main/screenux.sh"
 
