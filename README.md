@@ -1,56 +1,32 @@
 # Screenux - GNU Screen for humans
 
-Screenux is a long running script management tool for terminal written in bash script.
+Screenux is a long-running-script management tool for terminal written in bash script.
 
-- It's a GNU Screen wrapper that replaces:
-    - nohup
-    - tmux
-    - screen
-    - custom log handling
-    - a lot of manual typing
+It's a [GNU Screen](https://www.gnu.org/software/screen/) wrapper that try to simplify running background processes by providing defaults that make sense.
 
-| Because I wrote it for myself, it works only with `bash`, it hopefully should not be too hard to make it work with other tools.
+Works with `bash`
 
-## What It Replaces
-
-### Traditional Process Management
+## Comparison with nohup, screen, tmux
 ```bash
-# Nohup
-nohup python script.py > output.log 2>&1 &
+# nohup
+nohup bash -c 'command' > logfile.log 2>&1 &
 
-# Screenux:
-screenux run "python script.py"
-```
-
-### Manual Screen Management
-```bash
-# screen:
-screen -dmS session_name -L -Logfile logfile.log bash -c "command"
-
-# screenux:
-screenux run -n session_name "command"
-```
-
-### Complex Logging Setups
-```bash
 # screen
-mkdir -p logs/$(date +%Y%m%d)
-screen -L -Logfile logs/$(date +%Y%m%d)/process.log -dmS myprocess bash -c "command 2>&1"
+screen -dm -L -Logfile logfile.log bash -c "command"
 
-# screenux:
-screenux run -o logs "command"
+# tmux
+tmux new-session -d "bash -c 'command | tee logfile.log'"
+
+# screenux
+screenux run "command"
 ```
 
-### Development Process Management
-```bash
-# tmux:
-tmux new-session -d -s dev 'npm run dev'
-tmux split-window -h 'python backend.py'
-tmux attach -t dev
+# Installation
+Screenux is written in a single file `screenux.sh` which can be sourced to make screenux commands available in shell. You can alternatively run the following command to install it in `~/.local/screenux`
 
-# screenux:
-screenux run -n frontend "npm run dev"
-screenux run -n backend "python backend.py"
+```bash
+curl -sSL https://raw.githubusercontent.com/gndps/screenux/refs/heads/main/install.sh | bash
+source ~/.bashrc
 ```
 
 # Features
@@ -70,14 +46,6 @@ screenux run -n backend "python backend.py"
     - standalone installs
     - no interference with system screen
     - install path: screenux/screen491
-
-# Installation
-Screenux is written in a single file `screenux.sh` which can be sourced to make screenux commands available in shell. You can alternatively run the following command to install it in `~/.local/screenux`
-
-```bash
-curl -sSL https://raw.githubusercontent.com/gndps/screenux/refs/heads/main/install.sh | bash
-source ~/.bashrc
-```
 
 # Try
 
@@ -168,6 +136,13 @@ screenux run -n database_backup -o /var/log/backups "pg_dump -U postgres mydb > 
 - Use `-i` or `--interactive` when you need to interact with the command
 - Interactive mode automatically attaches to the screen session
 - You can still detach and reattach later as needed
+
+# Caveats
+When running inline, it can eat 2 levels of escaped quotes
+
+To achieve `echo "\"test\""` with screenux, you need to run `screenux run -i "echo \"\\\\\\\"test\\\\\\\"\""`
+
+This limitation is not applicable when running scripts with screenux.
 
 # License
 screenux is licensed under the MIT License.
