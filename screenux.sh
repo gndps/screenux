@@ -201,7 +201,7 @@ download_screen_491() {
     echo "================================"
     echo "Screen download directory:"
     echo "============================="
-    echo "    ${SCREEN_DOWNLOAD_DIR}"
+    echo "    ${script_dir}"
     echo "============================="
     echo "================================"
     echo ""
