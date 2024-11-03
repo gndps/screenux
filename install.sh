@@ -92,6 +92,8 @@ function screenux_init() {
         echo "Using system screen.."
         SYSTEM_SCREEN_PATH=$(command -v screen)
         ln -sf "$SYSTEM_SCREEN_PATH" "$INSTALL_DIR/sxreen"
+        alias sxreen="$INSTALL_DIR/sxreen"
+        screen_version=$(sxreen --version | awk '{print $3}')
         echo "Linked system 'screen' ($SYSTEM_SCREEN_PATH) to $INSTALL_DIR/sxreen"
     fi
     echo "screen version: $screen_version (sufficient)"
