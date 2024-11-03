@@ -30,9 +30,6 @@ source ~/.bashrc
 screenux -h
 ```
 
-## Alternate manual installation
-Screenux is written in a single file `screenux.sh` which can be sourced to make screenux commands available in shell.
-
 ## Uninstall
 ```bash
 rm -rf $HOME/.local/screenux
