@@ -223,13 +223,6 @@ download_screen_491() {
     )
 }
 
-# Run command in a screen session
-function screenux_run() {
-    # Add logic to run command in a screen session here
-    echo "Running command in a new screen session..."
-    # Example usage: screen -S mysession -d -m <command>
-}
-
 # List all screen sessions with an index
 function screenux_list() {
     local sessions
