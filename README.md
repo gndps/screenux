@@ -33,6 +33,13 @@ screenux -h
 ## Alternate manual installation
 Screenux is written in a single file `screenux.sh` which can be sourced to make screenux commands available in shell.
 
+## Uninstall
+```bash
+rm -rf $HOME/.local/screenux
+cp ~/.bashrc ~/.bashrc.backup_$(date +%Y%m%d_%H%M%S)
+sed -i '/screenux/d' ~/.bashrc
+```
+
 # Features
 
 ### Run in background (by default)
@@ -50,16 +57,6 @@ Screenux is written in a single file `screenux.sh` which can be sourced to make 
     - standalone installs
     - no interference with system screen
     - install path: screenux/screen491
-
-# Try
-
-
-# Uninstall
-```bash
-rm -rf $HOME/.local/screenux
-cp ~/.bashrc ~/.bashrc.backup_$(date +%Y%m%d_%H%M%S)
-sed -i '/screenux/d' ~/.bashrc
-```
 
 # Screenux Usage Examples
 
