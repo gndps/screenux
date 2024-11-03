@@ -36,8 +36,7 @@ Screenux is written in a single file `screenux.sh` which can be sourced to make 
 ## Uninstall
 ```bash
 rm -rf $HOME/.local/screenux
-cp ~/.bashrc ~/.bashrc.backup_$(date +%Y%m%d_%H%M%S)
-sed -i '/screenux/d' ~/.bashrc
+cp ~/.bashrc ~/.bashrc.backup_$(date +%Y%m%d_%H%M%S) && sed -i '/screenux/d' ~/.bashrc
 ```
 
 # Features
