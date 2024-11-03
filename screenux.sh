@@ -194,6 +194,13 @@ download_screen_491() {
     local SCREEN_DOWNLOAD_DIR
     SCREEN_DOWNLOAD_DIR=$(mktemp -d -t screen_download_XXXXXX)
     local install_dir="${SCREEN_DOWNLOAD_DIR}/screen491_make"
+    echo "================================"
+    echo "Screen download directory:"
+    echo "============================="
+    echo "    ${SCREEN_DOWNLOAD_DIR}"
+    echo "============================="
+    echo "================================"
+    echo ""
 
     # Change to the temporary download directory to ensure files are downloaded there
     (
@@ -243,11 +250,18 @@ function screenux_attach() {
         return 1
     fi
 
-    # Check if input is numeric (assumes it's an index from the list)
-    if [[ "$session_id" =~ ^[0-9]+$ ]]; then
-        # Get the actual screen session ID from the list based on index
-        session_id=$(screen -ls | grep -Eo '[0-9]+\.[^\t]+' | sed -n "${session_id}p" | awk '{print $1}')
-        if [[ -z "$session_id" ]]; then
+    # Get the list of session IDs, sorted so that the most recent is last
+    local sessions=( $(screen -ls | grep -Eo '[0-9]+\.[^\t]+' | awk '{print $1}') )
+    
+    if [[ "$session_id" =~ ^-?[0-9]+$ ]]; then
+        # If input is negative, adjust the index to count from the end
+        if (( session_id < 0 )); then
+            session_id=$(( ${#sessions[@]} + session_id + 1 ))
+        fi
+        # Validate index and get the session ID from the list
+        if (( session_id > 0 && session_id <= ${#sessions[@]} )); then
+            session_id="${sessions[$((session_id - 1))]}"
+        else
             echo "Error: Invalid index. Please provide a valid session index."
             screenux_list
             return 1
