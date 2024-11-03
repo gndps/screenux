@@ -1,6 +1,7 @@
 # Screenux - GNU Screen for humans
 
 Screenux is a long running script management tool for terminal written in bash script.
+
 - It's a GNU Screen wrapper that replaces:
     - nohup
     - tmux
@@ -8,7 +9,7 @@ Screenux is a long running script management tool for terminal written in bash s
     - custom log handling
     - a lot of manual typing
 
-| Compatible with: `bash`
+| Because I wrote it for myself, it works only with `bash`, it hopefully should not be too hard to make it work with other tools.
 
 ## What It Replaces
 
@@ -71,11 +72,21 @@ screenux run -n backend "python backend.py"
     - install path: screenux/screen491
 
 # Installation
-Screenux is written in a single file `screenux.sh` which can be sourced to make screenux commands available in shell
+Screenux is written in a single file `screenux.sh` which can be sourced to make screenux commands available in shell. You can alternatively run the following command to install it in `~/.local/screenux`
 
+```bash
+curl -sSL https://raw.githubusercontent.com/gndps/screenux/refs/heads/main/install.sh | bash
+source ~/.bashrc
 ```
-source screenux.sh
-screenux run "echo Hello World"
+
+# Try
+
+
+# Uninstall
+```bash
+rm -rf $HOME/.local/screenux
+cp ~/.bashrc ~/.bashrc.backup_$(date +%Y%m%d_%H%M%S)
+sed -i '/screenux/d' ~/.bashrc
 ```
 
 # Screenux Usage Examples
@@ -112,6 +123,9 @@ screenux l
 
 # Attach to a session using index number (from list)
 screenux attach 1
+
+# Attach most recent session
+screenux a -1
 
 # Attach to a session using full session name
 screenux attach training_job1
@@ -154,3 +168,12 @@ screenux run -n database_backup -o /var/log/backups "pg_dump -U postgres mydb > 
 - Use `-i` or `--interactive` when you need to interact with the command
 - Interactive mode automatically attaches to the screen session
 - You can still detach and reattach later as needed
+
+# License
+screenux is licensed under the MIT License.
+
+# Contributions
+I'm happy to accept contributions for any new useful features. Some features on my mind are:
+- Keep run history log and add commands like `screenux history`. This will also allow `screenux tail -1` to tail most recent session.
+- Adding simple https server to view all sessions in a browser.
+- `ngrok` support to the https server by default and print QR code for the url to view logs on phone.
