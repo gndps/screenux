@@ -13,6 +13,7 @@ echo "Downloading screenux to $INSTALL_DIR..."
 curl -sSL -o "$INSTALL_DIR/screenux.sh" "$SCREENUX_URL"
 
 download_screen_491() {
+    set -e
     local SCREEN_DOWNLOAD_TEMP_DIR
     SCREEN_DOWNLOAD_TEMP_DIR=$(mktemp -d -t screen_download_XXXXXX)
     local make_dir="${SCREEN_DOWNLOAD_TEMP_DIR}/screen491_make"
@@ -53,6 +54,7 @@ download_screen_491() {
 }
 
 function screenux_init() {
+    set -e
     # Check screen version
     alias sxreen=screen
     local screen_version=$(screen --version | awk '{print $3}')
@@ -79,6 +81,10 @@ function screenux_init() {
             echo "Using downloaded screen.."
             echo "Using "$INSTALL_DIR/sxreen""
             screen="$INSTALL_DIR/sxreen"
+            if [ ! -x "$INSTALL_DIR/sxreen" ]; then
+                echo "Error: $INSTALL_DIR/sxreen does not exist. Please check the logs and try manually."
+                return 1
+            fi
             alias sxreen="$INSTALL_DIR/sxreen"
             screen_version=$(sxreen --version | awk '{print $3}')
         fi
