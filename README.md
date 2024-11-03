@@ -6,7 +6,7 @@ It's a [GNU Screen](https://www.gnu.org/software/screen/) wrapper that try to si
 
 Works with `bash`
 
-## Comparison with nohup, screen, tmux
+## Comparison with similar tools
 ```bash
 # nohup
 nohup bash -c 'command' > logfile.log 2>&1 &
