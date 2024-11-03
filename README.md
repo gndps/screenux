@@ -36,8 +36,14 @@ rm -rf $HOME/.local/screenux
 cp ~/.bashrc ~/.bashrc.backup_$(date +%Y%m%d_%H%M%S)
 if [[ "$OSTYPE" == "darwin"* ]]; then
     sed -i '' '/screenux/d' "$HOME/.bashrc"
+    if [ -f "$HOME/.bash_profile" ]; then
+        sed -i '' '/screenux/d' "$HOME/.bash_profile"
+    fi
 else
     sed -i '/screenux/d' "$HOME/.bashrc"
+    if [ -f "$HOME/.bash_profile" ]; then
+        sed -i '/screenux/d' "$HOME/.bash_profile"
+    fi
 fi
 ```
 
