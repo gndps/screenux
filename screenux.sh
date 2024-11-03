@@ -222,3 +222,83 @@ download_screen_491() {
         rm -rf "${SCREEN_DOWNLOAD_DIR}"
     )
 }
+
+# Run command in a screen session
+function screenux_run() {
+    # Add logic to run command in a screen session here
+    echo "Running command in a new screen session..."
+    # Example usage: screen -S mysession -d -m <command>
+}
+
+# List all screen sessions with an index
+function screenux_list() {
+    local sessions
+    sessions=$(screen -ls | grep -Eo '[0-9]+\.[^\t]+' | nl)
+    if [[ -z "$sessions" ]]; then
+        echo "No active screen sessions."
+    else
+        echo "Active screen sessions:"
+        echo "$sessions"
+    fi
+}
+
+# Attach to a screen session by ID or index
+function screenux_attach() {
+    local session_id="$1"
+    if [[ -z "$session_id" ]]; then
+        echo "Error: No session ID or index provided."
+        return 1
+    fi
+
+    # Check if input is numeric (assumes it's an index from the list)
+    if [[ "$session_id" =~ ^[0-9]+$ ]]; then
+        # Get the actual screen session ID from the list based on index
+        session_id=$(screen -ls | grep -Eo '[0-9]+\.[^\t]+' | sed -n "${session_id}p" | awk '{print $1}')
+        if [[ -z "$session_id" ]]; then
+            echo "Error: Invalid index. Please provide a valid session index."
+            screenux_list
+            return 1
+        fi
+    fi
+
+    # Attach to the session
+    screen -r "$session_id" || echo "Error: Failed to attach to session '$session_id'"
+}
+
+# Display help for the screenux command
+function screenux_help() {
+    echo "Usage: screenux [command] [options]"
+    echo
+    echo "Commands:"
+    echo "  run                   Run a command in a screen session."
+    echo "  list | l | ls         List all screen sessions with a numbered index."
+    echo "  attach | a <id|index> Attach to a screen session by ID or index."
+    echo "  help                  Display this help message."
+    echo
+    echo "Use 'screenux [command] --help' for more information on a specific command."
+}
+
+# Main screenux function
+function screenux() {
+    case "$1" in
+        run)
+            shift
+            screenux_run "$@"
+            ;;
+        list|l|ls)
+            screenux_list
+            ;;
+        attach|a)
+            shift
+            screenux_attach "$1"
+            ;;
+        help|--help|-h)
+            screenux_help
+            ;;
+        *)
+            echo "Error: Unknown command '$1'"
+            screenux_help
+            return 1
+            ;;
+    esac
+}

@@ -1,171 +1,156 @@
 # Screenux - GNU Screen for humans
 
-Run commands or scripts in GNU screen with logging to file
+Screenux is a long running script management tool for terminal written in bash script.
+- It's a GNU Screen wrapper that replaces:
+    - nohup
+    - tmux
+    - screen
+    - custom log handling
+    - a lot of manual typing
 
-## Features
+| Compatible with: `bash`
 
-- single bash file
-- run in background
-- custom log file name
-    - unique timestamp suffix to logfile (default)
-    - single logfile for multiple runs (option)
-- custom output dir (default ./)
-- realtime writing to logfile
-- print run info after run
+## What It Replaces
+
+### Traditional Process Management
+```bash
+# Nohup
+nohup python script.py > output.log 2>&1 &
+
+# Screenux:
+screenux run "python script.py"
+```
+
+### Manual Screen Management
+```bash
+# screen:
+screen -dmS session_name -L -Logfile logfile.log bash -c "command"
+
+# screenux:
+screenux run -n session_name "command"
+```
+
+### Complex Logging Setups
+```bash
+# screen
+mkdir -p logs/$(date +%Y%m%d)
+screen -L -Logfile logs/$(date +%Y%m%d)/process.log -dmS myprocess bash -c "command 2>&1"
+
+# screenux:
+screenux run -o logs "command"
+```
+
+### Development Process Management
+```bash
+# tmux:
+tmux new-session -d -s dev 'npm run dev'
+tmux split-window -h 'python backend.py'
+tmux attach -t dev
+
+# screenux:
+screenux run -n frontend "npm run dev"
+screenux run -n backend "python backend.py"
+```
+
+# Features
+
+### Run in background (by default)
+- Run bash file in background screen session by default
+### Log to file (by default)
+- Each run have a new log file by default.
+- It's possible to set the log file name. Default log file name is `scx_run`.
+- The logs are saved to `./output/{log_file_name}_{timestamp}` by default.
+- output directory can be updated using `-o` param
+- The logs are saved to `./output/{log_file_name}` by default
+- It's possible to use a consistent logfile by setting the name using `-n` param and `-ns` i.e. `--no-suffix` param to disable timestamp suffix
+
+### Automatically download dependencies
 - auto download screen 4.9.1 if compatible version not found
     - standalone installs
     - no interference with system screen
     - install path: screenux/screen491
 
-## Example 1 - Simple run
-`source screenux.sh`
-
-`screenux_run "echo hello`
-
-### Before run
-```
-gndps:screenux gndps$ tree -L 2 -I screen_version_mgmt
-.
-├── README.md
-├── screenux.sh
-└── script_test.sh
-
-1 directory, 3 files
+# Installation
+Screenux is written in a single file `screenux.sh` which can be sourced to make screenux commands available in shell
 
 ```
-### Run command
-```
-gndps:screenux gndps$ screenux_run "echo hello"
-
-===== screenux run success =====
-Log file: /Users/gndps/github/screenux/screenux_run/screenux_run-20240822-185925-0c57.log
-View logs: tail -Fn 0 /Users/gndps/github/screenux/screenux_run/screenux_run-20240822-185925-0c57.log
-Attach session: /Users/gndps/github/screenux/screen_version_mgmt/screen491 -r screenux_run-20240822-185925-0c57
-Detach after attaching: Ctrl+A, D
-================================
-
+source screenux.sh
+screenux run "echo Hello World"
 ```
 
-### After run
-```
-gndps:screenux gndps$ tree -L 2 -I screen_version_mgmt
-.
-├── README.md
-├── screenux.sh
-├── screenux_run
-│   └── screenux_run-20240822-185925-0c57.log
-└── script_test.sh
+# Screenux Usage Examples
 
-2 directories, 4 files
-```
+## Basic Usage
 
-### Logfile
-```
-gndps:screenux gndps$ cat screenux_run/screenux_run-20240822-185925-0c57.log
-[Thu 22 Aug 2024 18:59:25 PDT] Running command:
-echo hello
----------
-hello
-```
-
-## Example 2 - Named run with custom output folder
-`source screenux.sh`
-
-`screenux_run -o outputs -n myrun "echo hello"`
-
-### Run command
-```
-gndps:screenux gndps$ screenux_run -o outputs -n myrun "echo hello"
-
-===== screenux run success =====
-Log file: outputs/myrun/myrun-20240822-190034-3fa7.log
-View logs: tail -Fn 0 outputs/myrun/myrun-20240822-190034-3fa7.log
-Attach session: /Users/gndps/github/screenux/screen_version_mgmt/screen491 -r myrun
-Detach after attaching: Ctrl+A, D
-================================
+### Running Commands
 
 ```
+# Run a simple command
+screenux run "echo Hello World"
 
-### After run
-```
-gndps:screenux gndps$ tree -L 3 -I screen_version_mgmt
-.
-├── README.md
-├── outputs
-│   └── myrun
-│       └── myrun-20240822-190034-3fa7.log
-├── screenux.sh
-├── screenux_run
-│   └── screenux_run-20240822-185925-0c57.log
-└── script_test.sh
+# Run a long-running process
+screenux run "python my_training_script.py --epochs 100"
 
-4 directories, 5 files
-```
-### Logfile
-```
-gndps:screenux gndps$ cat outputs/myrun/myrun-20240822-190034-3fa7.log 
-[Thu 22 Aug 2024 19:00:34 PDT] Running command:
-echo hello
----------
-hello
+# Run with a custom screen session name
+screenux run -n training_job1 "python train.py"
+
+# Run in interactive mode (automatically attaches to the screen session)
+screenux run -i "top"
+
+# Run with custom output directory for logs
+screenux run -o /path/to/logs "npm run build"
 ```
 
-## Example 3 - Logfile with no suffix
-`source screenux.sh`
-
-`screenux_run -o outputs -n runs_concat -ns "echo hello 1"`
-### Run command
-```
-gndps:screenux gndps$ screenux_run -o outputs -n runs_concat -ns "echo hello 1"
-
-===== screenux run success =====
-Log file: outputs/runs_concat.log
-View logs: tail -Fn 0 outputs/runs_concat.log
-Attach session: /Users/gndps/github/screenux/screen_version_mgmt/screen491 -r runs_concat
-Detach after attaching: Ctrl+A, D
-================================
+### Managing Sessions
 
 ```
-### After run
-```
-gndps:screenux gndps$ tree -L 3 -I screen_version_mgmt
-.
-├── README.md
-├── outputs
-│   ├── myrun
-│   │   └── myrun-20240822-190034-3fa7.log
-│   └── runs_concat.log
-├── screenux.sh
-├── screenux_run
-│   └── screenux_run-20240822-185925-0c57.log
-└── script_test.sh
+# List all active screen sessions
+screenux list
+# or use shortcuts
+screenux ls
+screenux l
 
-4 directories, 6 files
-```
-### Subsequent run with same logfile name
-```
-gndps:screenux gndps$ screenux_run -o outputs -n runs_concat -ns "echo hello 2"
+# Attach to a session using index number (from list)
+screenux attach 1
 
-===== screenux run success =====
-Log file: outputs/runs_concat.log
-View logs: tail -Fn 0 outputs/runs_concat.log
-Attach session: /Users/gndps/github/screenux/screen_version_mgmt/screen491 -r runs_concat
-Detach after attaching: Ctrl+A, D
-================================
-
-```
-### Concatenated logfile
-```
-gndps:screenux gndps$ cat outputs/runs_concat.log 
-[Thu 22 Aug 2024 19:01:45 PDT] Running command:
-echo hello 1
----------
-hello 1
-[Thu 22 Aug 2024 19:02:00 PDT] Running command:
-echo hello 2
----------
-hello 2
-
+# Attach to a session using full session name
+screenux attach training_job1
+# or use shortcut
+screenux a training_job1
 ```
 
+## Advanced Examples
 
+### Custom Log Management
+
+```
+# Run with custom name and no timestamp suffix in log filename
+screenux run -n backup_job --no-suffix "rsync -av /source /destination"
+
+# Run with verbose debugging enabled
+screenux run --verbose "python complex_script.py"
+
+# Run with custom output directory and session name
+screenux run -n database_backup -o /var/log/backups "pg_dump -U postgres mydb > backup.sql"
+```
+
+# Tips and Tricks
+## Session Management
+
+- Use `Ctrl+A, D` to detach from a screen session
+- Use `screenux list` to see all active sessions
+- Use meaningful names with `-n` for easier session management
+- Use `--no-suffix` when you want to overwrite log files instead of creating new ones
+
+## Logging
+
+- All commands automatically log to files
+- View logs in real-time: `tail -f /path/to/logs/session_name.log`
+- Use `-o` to specify custom log directories
+- Logs include command start time and full command string
+
+## Interactive Mode
+
+- Use `-i` or `--interactive` when you need to interact with the command
+- Interactive mode automatically attaches to the screen session
+- You can still detach and reattach later as needed
