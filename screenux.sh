@@ -1,36 +1,6 @@
 #!/usr/bin/env bash
 
-function screenux_init() {
-    # Check screen version
-    alias sxreen=screen
-    local screen_version=$(screen --version | awk '{print $3}')
-    local min_version="4.06.02"
-    if [ "$(printf '%s\n' "$min_version" "$screen_version" | sort -V | head -n1)" != "$min_version" ]; then
-        if [ ! -x "$script_dir/screen491" ]; then
-            # Download screen
-            echo ""
-            echo "screen version $screen_version is less than required $min_version."
-            echo "Attempting to download and install screen version 4.9.1..."
-            download_screen_491
-            screen_version=$("$script_dir/screen491" --version | awk '{print $3}')
-            if [ "$(printf '%s\n' "$min_version" "$screen_version" | sort -V | head -n1)" != "$min_version" ]; then
-                echo "Failed to upgrade screen to version $min_version or higher. Please check the logs and try manually."
-                return 1
-            else
-                debug_log "Using "$script_dir/screen491""
-                alias sxreen="$script_dir/screen491"
-                screen_version=$(sxreen --version | awk '{print $3}')    
-            fi
-        else
-            # Use downloaded screen
-            debug_log "Using "$script_dir/screen491""
-            screen="$script_dir/screen491"
-            alias sxreen="$script_dir/screen491"
-            screen_version=$(sxreen --version | awk '{print $3}')
-        fi
-    fi
-    debug_log "screen version: $screen_version (sufficient)"
-}
+export SCREENUX_DIR="$HOME/.local/screenux"
 
 function screenux_run() {
     UNNAMED_SESSIONS_SCREEN_NAME="scx_run"
@@ -169,12 +139,12 @@ function screenux_run() {
     # Run the command in a detached screen session
     debug_log "Running command in screen session: $screenname"
     debug_log "Temp Script: $temp_script"
-    sxreen -L -Logfile "$screenlog_file" -dmS "$screenname" bash "$temp_script"
+    $SCREENUX_DIR/sxreen -L -Logfile "$screenlog_file" -dmS "$screenname" bash "$temp_script"
     sleep 0.2 # allow scrip to kick in
-    sxreen -S "$screenname" -p0 -X logfile flush 0 # Enable real-time logging to file
+    $SCREENUX_DIR/sxreen -S "$screenname" -p0 -X logfile flush 0 # Enable real-time logging to file
 
     if $interactive; then
-        sxreen -r $screenname
+        $SCREENUX_DIR/sxreen -r $screenname
     fi
 
     # Provide instructions to the user
@@ -193,51 +163,10 @@ function screenux_run() {
     rm "$temp_script"
 }
 
-download_screen_491() {
-    script_dir="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-    local SCREEN_DOWNLOAD_DIR
-    SCREEN_DOWNLOAD_DIR=$(mktemp -d -t screen_download_XXXXXX)
-    local install_dir="${SCREEN_DOWNLOAD_DIR}/screen491_make"
-    echo "================================"
-    echo "Screen download directory:"
-    echo "============================="
-    echo "    ${script_dir}"
-    echo "============================="
-    echo "================================"
-    echo ""
-
-    # Change to the temporary download directory to ensure files are downloaded there
-    (
-        cd "${SCREEN_DOWNLOAD_DIR}"
-
-        # Download and extract the screen source code
-        curl -O https://ftp.gnu.org/gnu/screen/screen-4.9.1.tar.gz
-        tar -xzf screen-4.9.1.tar.gz
-
-        # Change into the extracted directory
-        cd "screen-4.9.1"
-
-        # Configure, compile, and install screen to the specified directory
-        ./configure --prefix="$install_dir"
-        make
-        make install prefix="$install_dir"
-
-        # Copy the compiled screen binary to a more convenient location
-        cp "$install_dir/bin/screen" "${script_dir}/screen491"
-
-        echo ""
-        echo "===== download screen 4.9.1 success ====="
-        echo "Download path: ${script_dir}/screen491"
-
-        # Cleanup: remove the temporary directory
-        rm -rf "${SCREEN_DOWNLOAD_DIR}"
-    )
-}
-
 # List all screen sessions with an index
 function screenux_list() {
     local sessions
-    sessions=$(sxreen -ls | grep -Eo '[0-9]+\.[^\t]+' | nl)
+    sessions=$($SCREENUX_DIR/sxreen -ls | grep -Eo '[0-9]+\.[^\t]+' | nl)
     if [[ -z "$sessions" ]]; then
         echo "No active screen sessions."
     else
@@ -255,7 +184,7 @@ function screenux_attach() {
     fi
 
     # Get the list of session IDs, sorted so that the most recent is last
-    local sessions=( $(sxreen -ls | grep -Eo '[0-9]+\.[^\t]+' | awk '{print $1}') )
+    local sessions=( $($SCREENUX_DIR/sxreen -ls | grep -Eo '[0-9]+\.[^\t]+' | awk '{print $1}') )
     
     if [[ "$session_id" =~ ^-?[0-9]+$ ]]; then
         # If input is negative, adjust the index to count from the end
@@ -273,7 +202,7 @@ function screenux_attach() {
     fi
 
     # Attach to the session
-    sxreen -r "$session_id" || echo "Error: Failed to attach to session '$session_id'"
+    $SCREENUX_DIR/sxreen -r "$session_id" || echo "Error: Failed to attach to session '$session_id'"
 }
 
 # Display help for the screenux command
@@ -313,5 +242,3 @@ function screenux() {
             ;;
     esac
 }
-
-screenux_init
