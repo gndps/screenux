@@ -13,7 +13,8 @@ mkdir -p "$INSTALL_DIR"
 
 # Download the screenux script
 echo "Downloading screenux to $INSTALL_DIR..."
-curl -s -o "$INSTALL_DIR/screenux.sh" "$SCREENUX_URL"
+curl -sSL -o "$INSTALL_DIR/screenux.sh" "$SCREENUX_URL"
+
 
 source $INSTALL_DIR/screenux.sh # initialize screenux
 
