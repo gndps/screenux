@@ -165,6 +165,7 @@ function screenux_run() {
     fi
     sleep 0.2 # allow script to kick in
     $SCREENUX_DIR/sxreen -S "$screenname" -p0 -X logfile flush 0 # Enable real-time logging to file
+    $SCREENUX_DIR/sxreen -X eval "altscreen off"
 
     if $interactive; then
         $SCREENUX_DIR/sxreen -r $screenname

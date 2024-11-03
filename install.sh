@@ -80,13 +80,8 @@ function screenux_init() {
             # Use downloaded screen
             echo "Using downloaded screen.."
             echo "Using "$INSTALL_DIR/sxreen""
-            screen="$INSTALL_DIR/sxreen"
-            if [ ! -x "$INSTALL_DIR/sxreen" ]; then
-                echo "Error: $INSTALL_DIR/sxreen does not exist. Please check the logs and try manually."
-                return 1
-            fi
             alias sxreen="$INSTALL_DIR/sxreen"
-            screen_version=$(sxreen --version | awk '{print $3}')
+            screen_version=$(sxreen --version | awk '{print $3}')    
         fi
     else
         echo "Using system screen.."
