@@ -6,6 +6,8 @@ It's a [GNU Screen](https://www.gnu.org/software/screen/) wrapper that try to si
 
 Works with `bash`
 
+![screenux](resources/screenux.gif)
+
 ## Comparison with similar tools
 ```bash
 # nohup

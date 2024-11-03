@@ -126,7 +126,7 @@ if command -v screenux &> /dev/null; then
     echo "Please run source ~/.bashrc to use it"
     echo ""
     echo "Example commands:"
-    echo -e "screenux run 'i=0; while true; do echo \"\$i\"; ((i++)); sleep 1; done'"
+    echo 'screenux run "for i in \$(seq 0 30); do echo \$i; sleep 1; done"'
     echo -e "screenux run myscript.sh"
     echo ""
     echo "=========================================="

@@ -241,7 +241,7 @@ function screenux_help() {
     echo "Use 'screenux [command] --help' for more information on a specific command."
     echo
     echo "Example commands:"
-    echo -e "screenux run 'i=0; while true; do echo \"\$i\"; ((i++)); sleep 1; done'"
+    echo 'screenux run "for i in \$(seq 0 30); do echo \$i; sleep 1; done"'
     echo -e "screenux run myscript.sh"
     echo
 }
