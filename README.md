@@ -22,12 +22,16 @@ screenux run "command"
 ```
 
 # Installation
-Screenux is written in a single file `screenux.sh` which can be sourced to make screenux commands available in shell. You can alternatively run the following command to install it in `~/.local/screenux`
 
 ```bash
+# Installs to `~/.local/screenux`
 curl -sSL https://raw.githubusercontent.com/gndps/screenux/refs/heads/main/install.sh | bash
 source ~/.bashrc
+screenux -h
 ```
+
+## Alternate manual installation
+Screenux is written in a single file `screenux.sh` which can be sourced to make screenux commands available in shell.
 
 # Features
 
