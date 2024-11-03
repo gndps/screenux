@@ -56,7 +56,6 @@ download_screen_491() {
 function screenux_init() {
     set -e
     # Check screen version
-    alias sxreen=screen
     local screen_version=$(screen --version | awk '{print $3}')
     local min_version="4.06.02"
     if [ "$(printf '%s\n' "$min_version" "$screen_version" | sort -V | head -n1)" != "$min_version" ]; then
@@ -79,15 +78,13 @@ function screenux_init() {
             # Use downloaded screen
             echo "Using downloaded screen.."
             echo "Using "$INSTALL_DIR/sxreen""
-            alias sxreen="$INSTALL_DIR/sxreen"
-            screen_version=$(sxreen --version | awk '{print $3}')
+            screen_version=$($INSTALL_DIR/sxreen --version | awk '{print $3}')
         fi
     else
         echo "Using system screen.."
         SYSTEM_SCREEN_PATH=$(command -v screen)
         ln -sf "$SYSTEM_SCREEN_PATH" "$INSTALL_DIR/sxreen"
-        alias sxreen="$INSTALL_DIR/sxreen"
-        screen_version=$(sxreen --version | awk '{print $3}')
+        screen_version=$($INSTALL_DIR/sxreen --version | awk '{print $3}')
         echo "Linked system 'screen' ($SYSTEM_SCREEN_PATH) to $INSTALL_DIR/sxreen"
     fi
     echo "screen version: $screen_version (sufficient)"
