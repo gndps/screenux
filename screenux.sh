@@ -43,11 +43,14 @@ function screenux_run() {
         echo "  --verbose               Enable verbose debug logging."
         echo "  -ns, --no-suffix        Disable suffix in log file name when --name is provided"
         echo
-        echo "Arguments:"
+        echo "Positional arguments:"
         echo "  command           The command to run in the screen session (should be provided after the options)."
-        echo "Examples:"
-        echo "  screenux_run \"echo test\""
-        echo "  screenux_run myscript.sh"
+        echo ""
+        echo ""
+        echo "Example commands:"
+        echo -e "screenux run 'i=0; while true; do echo \"\$i\"; ((i++)); sleep 1; done'"
+        echo -e "screenux run myscript.sh"
+        echo ""
     }
 
     # Function to print debug messages
@@ -236,6 +239,11 @@ function screenux_help() {
     echo "  help                  Display this help message."
     echo
     echo "Use 'screenux [command] --help' for more information on a specific command."
+    echo
+    echo "Example commands:"
+    echo -e "screenux run 'i=0; while true; do echo \"\$i\"; ((i++)); sleep 1; done'"
+    echo -e "screenux run myscript.sh"
+    echo
 }
 
 # Main screenux function
