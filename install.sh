@@ -6,11 +6,16 @@ set -e
 trap 'echo "Installation failed"; exit 1' ERR
 
 INSTALL_DIR="$HOME/.local/screenux"
-SCREENUX_URL="https://raw.githubusercontent.com/gndps/screenux/refs/heads/main/screenux.sh"
 mkdir -p "$INSTALL_DIR"
 
-echo "Downloading screenux to $INSTALL_DIR..."
-curl -sSL -o "$INSTALL_DIR/screenux.sh" "$SCREENUX_URL"
+if [ -f "$(dirname "$0")/screenux.sh" ]; then
+    echo "Copying screenux to $INSTALL_DIR..."
+    cp "$(dirname "$0")/screenux.sh" "$INSTALL_DIR/screenux.sh"
+else
+    SCREENUX_URL="https://raw.githubusercontent.com/gndps/screenux/refs/heads/main/screenux.sh"
+    echo "Downloading screenux to $INSTALL_DIR..."
+    curl -sSL -o "$INSTALL_DIR/screenux.sh" "$SCREENUX_URL"
+fi
 
 download_screen_491() {
     set -e
@@ -88,34 +93,42 @@ function screenux_init() {
         echo "Linked system 'screen' ($SYSTEM_SCREEN_PATH) to $INSTALL_DIR/sxreen"
     fi
     echo "screen version: $screen_version (sufficient)"
+    mkdir -p $INSTALL_DIR/bin
+    ln -sf "$INSTALL_DIR/screenux.sh" "$INSTALL_DIR/bin/screenux"
+    chmod +x $INSTALL_DIR/bin/screenux
+}
+
+add_screenux_to_profile() {
+    local profile_file="$1"
+    
+    # Check if the profile file exists and if "screenux" and "export" are in the same line
+    if [ -f "$profile_file" ]; then
+        if grep -q "export.*screenux" "$profile_file"; then
+            echo "Screenux is already added to ${profile_file}."
+        elif ! grep -q "export PATH=$INSTALL_DIR/bin:\$PATH" "$profile_file"; then
+            echo "" >> "$profile_file"
+            echo "# added by screenux" >> "$profile_file"
+            echo "export PATH=$INSTALL_DIR/bin:\$PATH" >> "$profile_file"
+            echo "alias sxx=\"screenux\"" >> "$profile_file"
+            echo "" >> "$profile_file"
+            echo "Screenux added to ${profile_file}: success"
+        fi
+    else
+        echo "Profile file ${profile_file} does not exist."
+    fi
 }
 
 
 screenux_init
 
-# Add the script to the bashrc
-echo "Adding screenux to your bashrc for easier use..."
-if [ ! -f "$HOME/.bashrc" ] || ! grep -q "source $INSTALL_DIR/screenux.sh" "$HOME/.bashrc"; then
-    echo "" >> "$HOME/.bashrc"
-    echo "# added by screenux" >> "$HOME/.bashrc"
-    echo "source $INSTALL_DIR/screenux.sh" >> "$HOME/.bashrc"
-    echo "" >> "$HOME/.bashrc"
-    echo "Screenux installation: success"
-fi
+echo
+echo "=======  Screenux dependencies are available  ======="
+echo "Adding screenux to your bash configurations for easier use..."
+add_screenux_to_profile "$HOME/.bashrc"
+add_screenux_to_profile "$HOME/.bash_profile"
 
-echo "Adding screenux to your bashprofile for easier use..."
-if [ -f "$HOME/.bash_profile" ]; then
-    if ! grep -q "source $INSTALL_DIR/screenux.sh" "$HOME/.bash_profile"; then
-        echo "" >> "$HOME/.bash_profile"
-        echo "# added by screenux" >> "$HOME/.bash_profile"
-        echo "source $INSTALL_DIR/screenux.sh" >> "$HOME/.bash_profile"
-        echo "" >> "$HOME/.bash_profile"
-        echo "Screenux add to bashprofile: success"
-    fi
-fi
-
-unset -f screenux_init download_screen_491
-source $INSTALL_DIR/screenux.sh
+# Verify installation
+source $HOME/.bashrc
 if command -v screenux &> /dev/null; then
     echo ""
     echo "=========================================="

@@ -34,20 +34,7 @@ screenux -h
 
 ## Uninstall
 ```bash
-rm -rf $HOME/.local/screenux
-cp ~/.bashrc ~/.bashrc.backup_$(date +%Y%m%d_%H%M%S)
-if [[ "$OSTYPE" == "darwin"* ]]; then
-    sed -i '' '/screenux/d' "$HOME/.bashrc"
-    if [ -f "$HOME/.bash_profile" ]; then
-        sed -i '' '/screenux/d' "$HOME/.bash_profile"
-    fi
-else
-    sed -i '/screenux/d' "$HOME/.bashrc"
-    if [ -f "$HOME/.bash_profile" ]; then
-        sed -i '/screenux/d' "$HOME/.bash_profile"
-    fi
-fi
-unset -f screenux
+curl -sSL https://raw.githubusercontent.com/gndps/screenux/refs/heads/main/uninstall.sh | bash
 ```
 
 # Features
@@ -56,7 +43,7 @@ unset -f screenux
 - Run bash file in background screen session by default
 ### Log to file (by default)
 - Each run have a new log file by default.
-- It's possible to set the log file name. Default log file name is `scx_run`.
+- It's possible to set the log file name. Default log file name is `sxx_run`.
 - The logs are saved to `./output/{log_file_name}_{timestamp}` by default.
 - output directory can be updated using `-o` param
 - The logs are saved to `./output/{log_file_name}` by default

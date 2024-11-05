@@ -17,7 +17,7 @@ function screenux_create_temp_file() {
 }
 
 function screenux_run() {
-    UNNAMED_SESSIONS_SCREEN_NAME="scx_run"
+    UNNAMED_SESSIONS_SCREEN_NAME="sxx_run"
     SCREEN_DOWNLOAD_DIR="screen_version_mgmt" # only used if system screen version < 4.06.02
     # Default values
     script_dir="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
@@ -81,7 +81,7 @@ function screenux_run() {
                 ;;
             -h|--help)
                 show_help
-                return 0
+                exit 0
                 ;;
             --verbose)
                 verbose=true
@@ -100,7 +100,7 @@ function screenux_run() {
             -*)
                 echo "Error: Invalid argument '$1'"
                 show_help
-                return 1
+                exit 1
                 ;;
             *)
                 break
@@ -115,7 +115,7 @@ function screenux_run() {
     if [ -z "$command" ]; then
         echo "Error: No command provided."
         show_help
-        return 1
+        exit 1
     fi
 
     debug_log "Preparing to run command in screen"
@@ -142,16 +142,6 @@ function screenux_run() {
     debug_log "screenlog_dir: $screenlog_dir"
     debug_log "screenlog_file: $screenlog_file"
     mkdir -p "$screenlog_dir"
-
-    # Create a temporary script to execute the command
-    # local temp_script=$(mktemp)
-    # debug_log "temp_script created at: $temp_script"
-    # echo "#!/bin/bash" > "$temp_script"
-    # echo "echo \"[$(date)] Running command:\"" >> "$temp_script"
-    # echo -e "echo -e '$command'" >> "$temp_script"
-    # echo "echo ---------" >> "$temp_script"
-    # echo "eval \"$command\"" >> "$temp_script"
-    # chmod +x "$temp_script"
 
     # Run the command in a detached screen session
     debug_log "Running command in screen session: $screenname"
@@ -203,7 +193,7 @@ function screenux_attach() {
     local session_id="$1"
     if [[ -z "$session_id" ]]; then
         echo "Error: No session ID or index provided."
-        return 1
+        exit 1
     fi
 
     # Get the list of session IDs, sorted so that the most recent is last
@@ -220,7 +210,7 @@ function screenux_attach() {
         else
             echo "Error: Invalid index. Please provide a valid session index."
             screenux_list
-            return 1
+            exit 1
         fi
     fi
 
@@ -249,7 +239,7 @@ function screenux_help() {
 # Main screenux function
 function screenux() {
     case "$1" in
-        run)
+        run|r)
             shift
             # Use printf to escape the arguments properly before passing them to screenux_run
             screenux_run $@
@@ -257,7 +247,7 @@ function screenux() {
         list|l|ls)
             screenux_list
             ;;
-        attach|a)
+        attach|a|-a)
             shift
             screenux_attach "$1"
             ;;
@@ -267,7 +257,9 @@ function screenux() {
         *)
             echo "Error: Unknown command '$1'"
             screenux_help
-            return 1
+            exit 2
             ;;
     esac
 }
+
+screenux $@
