@@ -93,10 +93,6 @@ function screenux_run() {
                 debug_log "no_suffix mode enabled"
                 shift
                 ;;
-            --) # End of options, next arguments are the command
-                shift
-                break
-                ;;
             -*)
                 echo "Error: Invalid argument '$1'"
                 show_help
