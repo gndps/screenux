@@ -145,13 +145,14 @@ function screenux_run() {
     debug_log -e $command
     debug_log "pwd: $(pwd)"
     
-    if file $command | grep -q "script"; then
+    if [[ -f "$command" ]] && file "$command" | grep -q "script"; then
         debug_log "It's a script!"
         $SCREENUX_DIR/sxreen -L -Logfile "$screenlog_file" -dmS "$screenname" bash "$command"
     else
         debug_log "Not a script."
         $SCREENUX_DIR/sxreen -L -Logfile "$screenlog_file" -dmS "$screenname" bash -c "$command"
     fi
+
     sleep 0.2 # allow script to kick in
     $SCREENUX_DIR/sxreen -S "$screenname" -p0 -X logfile flush 0 # Enable real-time logging to file
     $SCREENUX_DIR/sxreen -X eval "altscreen off"
