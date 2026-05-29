@@ -139,6 +139,13 @@ function screenux_run() {
     debug_log "screenlog_file: $screenlog_file"
     mkdir -p "$screenlog_dir"
 
+    # Log the formatted command to a file
+    {
+        echo "Command:"
+        echo "$command"
+        echo "-----------"
+    } >> "$screenlog_file"
+
     # Run the command in a detached screen session
     debug_log "Running command in screen session: $screenname"
     debug_log "command:"
@@ -223,13 +230,18 @@ function screenux_help() {
     echo "  run                   Run a command in a screen session."
     echo "  list | l | ls         List all screen sessions with a numbered index."
     echo "  attach | a <id|index> Attach to a screen session by ID or index. -1 to attach to most recent session."
+    echo "  screen | sc [args]    Pass arguments directly to the screen binary (sxreen)."
+    echo "  paths                 Print paths to the screen binary (sxreen) and screenux."
     echo "  help                  Display this help message."
+    echo "  <unknown command>     Any unrecognized command is passed directly to the screen binary."
     echo
     echo "Use 'screenux [command] --help' for more information on a specific command."
     echo
     echo "Example commands:"
     echo 'screenux run "for i in \$(seq 0 30); do echo \$i; sleep 1; done"'
     echo -e "screenux run myscript.sh"
+    echo "screenux screen -ls"
+    echo "screenux paths"
     echo
 }
 
@@ -248,13 +260,19 @@ function screenux() {
             shift
             screenux_attach "$1"
             ;;
+        screen|sc)
+            shift
+            $SCREENUX_DIR/sxreen "$@"
+            ;;
+        paths)
+            echo "screenux: $SCREENUX_DIR/screenux.sh"
+            echo "screen (sxreen): $SCREENUX_DIR/sxreen"
+            ;;
         help|--help|-h)
             screenux_help
             ;;
         *)
-            echo "Error: Unknown command '$1'"
-            screenux_help
-            exit 2
+            $SCREENUX_DIR/sxreen "$@"
             ;;
     esac
 }
