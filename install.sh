@@ -119,6 +119,20 @@ add_screenux_to_profile() {
 }
 
 
+check_no_active_sessions() {
+    local active_sessions
+    active_sessions=$(screen -ls 2>/dev/null | grep -E '\bsxx_' || true)
+    if [ -n "$active_sessions" ]; then
+        echo "ERROR: Active screenux sessions detected:"
+        echo "$active_sessions"
+        echo ""
+        echo "Please close all screenux sessions before installing."
+        echo "To kill a session: screen -S <session-name> -X quit"
+        exit 1
+    fi
+}
+
+check_no_active_sessions
 screenux_init
 
 echo
