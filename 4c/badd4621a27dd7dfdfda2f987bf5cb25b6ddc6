@@ -1,0 +1,21 @@
+screenux.sh
+  s_a8fc4fbcbba11a::t_bfed3c1abb78de 290-293
+  s_a8fc4fbcbba11a::t_c23da30565e44f 225-250
+  s_a8fc4fbcbba11a::t_5535fe954cb11e 259
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.2",
+  "base_commit_sha": "4cbadd4621a27dd7dfdfda2f987bf5cb25b6ddc6",
+  "prompts": {},
+  "sessions": {
+    "s_a8fc4fbcbba11a": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "65106201-413f-4e5b-b8af-7a4d43deb890",
+        "model": "claude-sonnet-4-6"
+      },
+      "human_author": "Gundeep Singh <gundeep.singh@dialpad.com>"
+    }
+  }
+}
