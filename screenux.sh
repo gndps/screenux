@@ -222,6 +222,32 @@ function screenux_attach() {
     $SCREENUX_DIR/sxreen -r "$session_id" || echo "Error: Failed to attach to session '$session_id'"
 }
 
+# Kill a screen session by ID or index
+function screenux_kill() {
+    local session_id="$1"
+    if [[ -z "$session_id" ]]; then
+        echo "Error: No session ID or index provided."
+        exit 1
+    fi
+
+    local sessions=( $($SCREENUX_DIR/sxreen -ls | grep -Eo '[0-9]+\.[^\t]+' | awk '{print $1}') )
+
+    if [[ "$session_id" =~ ^-?[0-9]+$ ]]; then
+        if (( session_id < 0 )); then
+            session_id=$(( ${#sessions[@]} + session_id + 1 ))
+        fi
+        if (( session_id > 0 && session_id <= ${#sessions[@]} )); then
+            session_id="${sessions[$((session_id - 1))]}"
+        else
+            echo "Error: Invalid index. Please provide a valid session index."
+            screenux_list
+            exit 1
+        fi
+    fi
+
+    $SCREENUX_DIR/sxreen -S "$session_id" -X quit && echo "Killed session '$session_id'" || echo "Error: Failed to kill session '$session_id'"
+}
+
 # Display help for the screenux command
 function screenux_help() {
     echo "Usage: screenux [command] [options]"
@@ -230,6 +256,7 @@ function screenux_help() {
     echo "  run                   Run a command in a screen session."
     echo "  list | l | ls         List all screen sessions with a numbered index."
     echo "  attach | a <id|index> Attach to a screen session by ID or index. -1 to attach to most recent session."
+    echo "  kill | k <id|index>   Kill a screen session by ID or index. -1 to kill the most recent session."
     echo "  screen | sc [args]    Pass arguments directly to the screen binary (sxreen)."
     echo "  paths                 Print paths to the screen binary (sxreen) and screenux."
     echo "  help                  Display this help message."
@@ -259,6 +286,10 @@ function screenux() {
         attach|a|-a)
             shift
             screenux_attach "$1"
+            ;;
+        kill|k)
+            shift
+            screenux_kill "$1"
             ;;
         screen|sc)
             shift
